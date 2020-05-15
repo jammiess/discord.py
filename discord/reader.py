@@ -387,8 +387,10 @@ class AudioReader(threading.Thread):
             self._current_error = exc
             self.stop()
         finally:
+            print("stopping decoders")
             self._stop_decoders()
             try:
+                print("sink cleanup")
                 self.sink.cleanup()
             except:
                 log.exception("Error during sink cleanup")
