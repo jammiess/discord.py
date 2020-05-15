@@ -548,6 +548,7 @@ class VoiceClient:
 
     def stop_listening(self):
         """Stops receiving audio."""
+        print("stopping reader")
         if self._reader:
             self._reader.stop()
             self._reader = None
