@@ -391,7 +391,7 @@ class AudioReader(threading.Thread):
             self._stop_decoders()
             try:
                 print("sink cleanup")
-                self.sink.cleanup()
+                self.sink.close()
             except:
                 log.exception("Error during sink cleanup")
                 # Testing only
