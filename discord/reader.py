@@ -375,6 +375,7 @@ class AudioReader(threading.Thread):
     def run(self):
         try:
             self._do_run()
+            print("stopped")
         except socket.error as exc:
             self._current_error = exc
             self.stop()
