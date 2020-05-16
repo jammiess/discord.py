@@ -271,7 +271,10 @@ class AudioReader(threading.Thread):
         self.decoder.reset(*ssrcs)
 
     def _stop_decoders(self, **kwargs):
-        self.decoder.stop(**kwargs)
+        try:
+            self.decoder.stop(**kwargs)
+        except ValueError:
+            pass
 
     def _ssrc_removed(self, ssrc):
         # An user has disconnected but there still may be
@@ -307,7 +310,6 @@ class AudioReader(threading.Thread):
         # if i were to fire a sink change mini-event it would be here
 
     def _do_run(self):
-        print("running")
         while not self._end.is_set():
             if not self.connected.is_set():
                 self.connected.wait()
@@ -369,16 +371,13 @@ class AudioReader(threading.Thread):
                     log.debug("Received packet for unknown ssrc %s", packet.ssrc)
 
                 self.decoder.feed_rtp(packet)
-        print("stopping")
 
     def stop(self):
         self._end.set()
 
     def run(self):
         try:
-            print("starting")
             self._do_run()
-            print("stopped")
         except socket.error as exc:
             self._current_error = exc
             self.stop()
@@ -387,13 +386,10 @@ class AudioReader(threading.Thread):
             self._current_error = exc
             self.stop()
         finally:
-            print("stopping decoders")
             self._stop_decoders()
             try:
-                print("sink cleanup")
                 self.sink.cleanup()
             except:
-                log.exception("Error during sink cleanup")
                 # Testing only
                 traceback.print_exc()
 
